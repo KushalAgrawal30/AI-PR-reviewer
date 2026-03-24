@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IntelliJ / VS Code
+.idea/
+.vscode/
+*.iml
+
+# Java / Spring Boot
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Python
+ai-service/venv/
+ai-service/__pycache__/
+ai-service/.pytest_cache/
+ai-service/*.pyc
+
+# Next.js
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+
+# Build folders
+dist/
+build/
+
+# OS / temp
+*.swp
+*.swo
