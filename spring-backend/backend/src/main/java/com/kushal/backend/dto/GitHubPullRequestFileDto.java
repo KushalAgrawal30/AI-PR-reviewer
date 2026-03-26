@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangedFileDto {
-    private String path;
+public class GitHubPullRequestFileDto {
+    private String filename;
     private String patch;
 }
