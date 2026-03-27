@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Card } from "@/app/components/ui/Card";
+import { Button } from "@/app/components/ui/Button";
+import { LoadingState } from "@/app/components/ui/LoadingState";
 
 type LoggedInUser = {
   id: number;
@@ -10,7 +13,7 @@ type LoggedInUser = {
   avatarUrl: string;
 };
 
-export default function RepositorySetupPage() {
+function RepositorySetupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -71,24 +74,38 @@ export default function RepositorySetupPage() {
   }, [router, searchParams]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-md rounded-2xl border p-8 shadow-sm text-center">
-        <h1 className="text-2xl font-bold mb-3">GitHub App Setup</h1>
+    <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+      <div className="w-full max-w-md">
+        <Card className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-6">GitHub App Setup</h1>
 
-        {error ? (
-          <>
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => router.replace("/repositories")}
-              className="rounded-xl border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition"
-            >
-              Back to Repositories
-            </button>
-          </>
-        ) : (
-          <p className="text-gray-600">{status}</p>
-        )}
+          {error ? (
+            <>
+              <p className="text-red-500 mb-6">{error}</p>
+              <Button
+                onClick={() => router.replace("/repositories")}
+                variant="primary"
+              >
+                Back to Repositories
+              </Button>
+            </>
+          ) : (
+            <LoadingState message={status} />
+          )}
+        </Card>
       </div>
     </main>
+  );
+}
+
+export default function RepositorySetupPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+        <LoadingState message="Loading..." />
+      </main>
+    }>
+      <RepositorySetupContent />
+    </Suspense>
   );
 }

@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Card } from "@/app/components/ui/Card";
+import { Button } from "@/app/components/ui/Button";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+import { StatusBadge } from "@/app/components/ui/StatusBadge";
+import { LoadingState } from "@/app/components/ui/LoadingState";
+import { EmptyState } from "@/app/components/ui/EmptyState";
 
 type LoggedInUser = {
   id: number;
@@ -102,120 +108,150 @@ export default function RepositoriesPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-gray-600">Loading repositories...</p>
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+        <LoadingState message="Loading repositories..." />
       </main>
     );
   }
 
   if (error) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-red-600">Error: {error}</p>
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Error: {error}</p>
+          <Button onClick={() => router.push("/dashboard")}>
+            Back to Dashboard
+          </Button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen px-6 py-10">
+    <main className="min-h-screen px-6 py-10 bg-[#0a0a0a]">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Repositories</h1>
-            <p className="text-gray-600">
-              {user ? `Repositories for @${user.githubLogin}` : ""}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleInstallApp}
-              disabled={installing}
-              className="rounded-xl border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition disabled:opacity-60"
-            >
-              {installing ? "Redirecting..." : "Connect Repository"}
-            </button>
-
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="rounded-xl border px-4 py-2 text-sm font-medium hover:bg-gray-50 transition"
-            >
-              Back to Dashboard
-            </button>
-          </div>
-        </div>
+        <PageHeader
+          title="Repositories"
+          description={user ? `Repositories for @${user.githubLogin}` : ""}
+          actions={
+            <>
+              <Button
+                onClick={handleInstallApp}
+                disabled={installing}
+                variant="primary"
+              >
+                {installing ? "Redirecting..." : "Connect Repository"}
+              </Button>
+              <Button
+                onClick={() => router.push("/dashboard")}
+                variant="secondary"
+              >
+                Back to Dashboard
+              </Button>
+            </>
+          }
+        />
 
         <section className="mb-10">
-          <h2 className="text-2xl font-semibold mb-4">All GitHub Repositories</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">All GitHub Repositories</h2>
 
           {allRepos.length === 0 ? (
-            <div className="rounded-2xl border p-6 shadow-sm">
-              <p className="text-gray-600">No GitHub repositories found.</p>
-            </div>
+            <Card>
+              <EmptyState
+                title="No repositories found"
+                description="We couldn't find any repositories in your GitHub account."
+              />
+            </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {allRepos.map((repo) => (
-                <div
-                  key={repo.githubRepoId}
-                  className="rounded-2xl border p-6 shadow-sm"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{repo.fullName}</h3>
-                      <p className="text-sm text-gray-600">
-                        {repo.isPrivate ? "Private" : "Public"}
-                      </p>
+                <Card key={repo.githubRepoId} hover>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-white">{repo.fullName}</h3>
+                        <StatusBadge 
+                          status={repo.isPrivate ? "Private" : "Public"} 
+                          variant={repo.isPrivate ? "warning" : "default"}
+                        />
+                      </div>
+                      <p className="text-[#8b8b8b] text-sm font-mono">ID: {repo.githubRepoId}</p>
                     </div>
 
-                    <span className="rounded-full border px-3 py-1 text-sm font-medium">
-                      {repo.connected ? "Connected" : "Not Connected"}
-                    </span>
+                    <StatusBadge status={repo.connected ? "Connected" : "Not Connected"} />
                   </div>
 
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p>Repository ID: {repo.githubRepoId}</p>
-                    <p>Owner: {repo.ownerName}</p>
-                    <p>Name: {repo.name}</p>
-                    <p>
-                      Installation ID:{" "}
-                      {repo.installationId !== null ? repo.installationId : "Not available"}
-                    </p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                    <div>
+                      <span className="text-[#6b6b6b]">Owner:</span>{" "}
+                      <span className="text-[#a1a1a1]">{repo.ownerName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#6b6b6b]">Name:</span>{" "}
+                      <span className="text-[#a1a1a1]">{repo.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#6b6b6b]">Installation ID:</span>{" "}
+                      <span className="text-[#a1a1a1] font-mono">
+                        {repo.installationId !== null ? repo.installationId : "Not available"}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Connected Repositories</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Connected Repositories</h2>
 
           {connectedRepos.length === 0 ? (
-            <div className="rounded-2xl border p-6 shadow-sm">
-              <p className="text-gray-600">No connected repositories yet.</p>
-            </div>
+            <Card>
+              <EmptyState
+                title="No connected repositories"
+                description="Connect a repository to start reviewing pull requests with AI."
+                action={
+                  <Button onClick={handleInstallApp} variant="primary">
+                    Connect Your First Repository
+                  </Button>
+                }
+              />
+            </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {connectedRepos.map((repo) => (
-                <div
-                  key={repo.id}
-                  className="rounded-2xl border p-6 shadow-sm"
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-xl font-semibold">{repo.fullName}</h3>
-                    <span className="rounded-full border px-3 py-1 text-sm font-medium">
-                      {repo.active ? "Active" : "Inactive"}
-                    </span>
+                <Card key={repo.id} hover>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-white">{repo.fullName}</h3>
+                        <StatusBadge 
+                          status={repo.isPrivate ? "Private" : "Public"} 
+                          variant={repo.isPrivate ? "warning" : "default"}
+                        />
+                      </div>
+                      <p className="text-[#8b8b8b] text-sm font-mono">ID: {repo.githubRepoId}</p>
+                    </div>
+
+                    <StatusBadge status={repo.active ? "Active" : "Inactive"} />
                   </div>
 
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p>Repository ID: {repo.githubRepoId}</p>
-                    <p>Owner: {repo.ownerName}</p>
-                    <p>Name: {repo.repoName}</p>
-                    <p>Installation ID: {repo.installationId}</p>
-                    <p>Private: {repo.isPrivate ? "Yes" : "No"}</p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                    <div>
+                      <span className="text-[#6b6b6b]">Owner:</span>{" "}
+                      <span className="text-[#a1a1a1]">{repo.ownerName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#6b6b6b]">Repository:</span>{" "}
+                      <span className="text-[#a1a1a1]">{repo.repoName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[#6b6b6b]">Installation ID:</span>{" "}
+                      <span className="text-[#a1a1a1] font-mono">{repo.installationId}</span>
+                    </div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}

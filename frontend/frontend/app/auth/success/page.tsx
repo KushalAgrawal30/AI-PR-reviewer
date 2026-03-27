@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { LoadingState } from "@/app/components/ui/LoadingState";
 
-export default function AuthSuccessPage() {
+function AuthSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -30,11 +31,20 @@ export default function AuthSuccessPage() {
   }, [router, searchParams]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold mb-2">Signing you in...</h1>
-        <p className="text-gray-600">Please wait while we redirect you.</p>
-      </div>
+    <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+      <LoadingState message="Signing you in..." />
     </main>
+  );
+}
+
+export default function AuthSuccessPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+        <LoadingState message="Loading..." />
+      </main>
+    }>
+      <AuthSuccessContent />
+    </Suspense>
   );
 }

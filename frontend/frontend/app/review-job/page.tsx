@@ -2,6 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Card } from "@/app/components/ui/Card";
+import { Button } from "@/app/components/ui/Button";
+import { PageHeader } from "@/app/components/ui/PageHeader";
+import { StatusBadge } from "@/app/components/ui/StatusBadge";
+import { LoadingState } from "@/app/components/ui/LoadingState";
+import { EmptyState } from "@/app/components/ui/EmptyState";
 
 type ReviewJob = {
     id: number;
@@ -15,6 +22,7 @@ type ReviewJob = {
 };
 
 export default function ReviewJobsPage() {
+    const router = useRouter();
     const [jobs, setJobs] = useState<ReviewJob[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -43,48 +51,101 @@ export default function ReviewJobsPage() {
     }, []);
 
     if (loading) {
-        return <div className="p-6">Loading review jobs...</div>;
+        return (
+            <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+                <LoadingState message="Loading review jobs..." />
+            </main>
+        );
     }
 
     if (error) {
-        return <div className="p-6 text-red-600">Error: {error}</div>;
+        return (
+            <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
+                <div className="text-center">
+                    <p className="text-red-500 mb-4">Error: {error}</p>
+                    <Button onClick={() => router.push("/dashboard")}>
+                        Back to Dashboard
+                    </Button>
+                </div>
+            </main>
+        );
     }
 
     return (
-        <main className="min-h-screen p-6">
-            <h1 className="text-3xl font-bold mb-6">Review Jobs</h1>
+        <main className="min-h-screen px-6 py-10 bg-[#0a0a0a]">
+            <div className="mx-auto max-w-6xl">
+                <PageHeader
+                    title="Review Jobs"
+                    description="AI-powered pull request review results"
+                    actions={
+                        <Button onClick={() => router.push("/dashboard")} variant="secondary">
+                            Back to Dashboard
+                        </Button>
+                    }
+                />
 
-            {jobs.length === 0 ? (
-                <p>No review jobs found.</p>
-            ) : (
-                <div className="space-y-4">
-                    {jobs.map((job) => (
-                        <Link
-                            key={job.id}
-                            href={`/review-jobs/${job.id}`}
-                            className="block border rounded-xl p-4 shadow-sm hover:shadow-md transition"
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <h2 className="text-xl font-semibold">{job.title}</h2>
-                                <span className="text-sm font-medium px-3 py-1 rounded-full border">
-                                    {job.status}
-                                </span>
-                            </div>
+                {jobs.length === 0 ? (
+                    <Card>
+                        <EmptyState
+                            title="No review jobs found"
+                            description="Review jobs will appear here once you've connected repositories and opened pull requests."
+                            action={
+                                <Button onClick={() => router.push("/repositories")} variant="primary">
+                                    Connect Repositories
+                                </Button>
+                            }
+                        />
+                    </Card>
+                ) : (
+                    <div className="space-y-3">
+                        {jobs.map((job) => (
+                            <Link
+                                key={job.id}
+                                href={`/review-jobs/${job.id}`}
+                                className="block group"
+                            >
+                                <Card hover>
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                            <h2 className="text-lg font-semibold text-white mb-2 group-hover:text-gray-200 transition-colors">
+                                                {job.title}
+                                            </h2>
+                                            <div className="flex items-center gap-4 text-sm text-[#8b8b8b]">
+                                                <span className="flex items-center gap-1.5">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                                    </svg>
+                                                    {job.repositoryName}
+                                                </span>
+                                                <span className="flex items-center gap-1.5">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                                    </svg>
+                                                    PR #{job.prNumber}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                            <p className="text-sm text-gray-600 mb-1">
-                                Repository: {job.repositoryName}
-                            </p>
-                            <p className="text-sm text-gray-600 mb-1">PR Number: {job.prNumber}</p>
-                            <p className="text-sm text-gray-700 mb-2">
-                                {job.summary || "No summary available"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                                Created At: {new Date(job.createdAt).toLocaleString()}
-                            </p>
-                        </Link>
-                    ))}
-                </div>
-            )}
+                                        <StatusBadge status={job.status} />
+                                    </div>
+
+                                    {job.summary && (
+                                        <p className="text-[#a1a1a1] text-sm mb-3 line-clamp-2">
+                                            {job.summary}
+                                        </p>
+                                    )}
+
+                                    <div className="flex items-center gap-4 text-xs text-[#6b6b6b]">
+                                        <span>Created {new Date(job.createdAt).toLocaleDateString()}</span>
+                                        <span>•</span>
+                                        <span>Updated {new Date(job.updatedAt).toLocaleDateString()}</span>
+                                    </div>
+                                </Card>
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
         </main>
     );
 }
