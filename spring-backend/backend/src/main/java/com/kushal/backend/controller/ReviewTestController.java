@@ -1,8 +1,7 @@
 package com.kushal.backend.controller;
 
-import com.kushal.backend.dto.AiReviewRequestDto;
-import com.kushal.backend.dto.AiReviewResponseDto;
-import com.kushal.backend.dto.CreateReviewRequestDto;
+import com.kushal.backend.dto.AiDto.AiReviewResponseDto;
+import com.kushal.backend.dto.RequestDto.CreateReviewRequestDto;
 import com.kushal.backend.service.AiReviewClientService;
 import com.kushal.backend.service.ReviewOrchestrationService;
 import lombok.RequiredArgsConstructor;

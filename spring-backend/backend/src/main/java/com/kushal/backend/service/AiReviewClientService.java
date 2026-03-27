@@ -1,7 +1,7 @@
 package com.kushal.backend.service;
 
-import com.kushal.backend.dto.AiReviewRequestDto;
-import com.kushal.backend.dto.AiReviewResponseDto;
+import com.kushal.backend.dto.AiDto.AiReviewRequestDto;
+import com.kushal.backend.dto.AiDto.AiReviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

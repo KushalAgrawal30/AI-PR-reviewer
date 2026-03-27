@@ -1,7 +1,7 @@
 package com.kushal.backend.service;
 
-import com.kushal.backend.dto.ChangedFileDto;
-import com.kushal.backend.dto.CreateReviewRequestDto;
+import com.kushal.backend.dto.AiDto.ChangedFileDto;
+import com.kushal.backend.dto.RequestDto.CreateReviewRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

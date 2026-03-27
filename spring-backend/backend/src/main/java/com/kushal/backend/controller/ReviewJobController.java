@@ -1,8 +1,8 @@
 package com.kushal.backend.controller;
 
 
-import com.kushal.backend.dto.ReviewJobDetailsDto;
-import com.kushal.backend.dto.ReviewJobListDto;
+import com.kushal.backend.dto.ReviewpageDto.ReviewJobDetailsDto;
+import com.kushal.backend.dto.ReviewpageDto.ReviewJobListDto;
 import com.kushal.backend.service.ReviewJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

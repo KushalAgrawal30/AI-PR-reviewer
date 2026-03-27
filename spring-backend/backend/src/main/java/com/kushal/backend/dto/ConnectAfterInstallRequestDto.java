@@ -3,13 +3,10 @@ package com.kushal.backend.dto;
 import lombok.*;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
-@Builder
-public class PRfilesRequestDTO {
-    private String repoFullName;
+public class ConnectAfterInstallRequestDto {
+    private Long userId;
     private Long installationId;
-    private int prNumberLong;
 }

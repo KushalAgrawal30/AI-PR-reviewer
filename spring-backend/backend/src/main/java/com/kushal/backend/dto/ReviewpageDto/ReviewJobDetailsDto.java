@@ -1,4 +1,4 @@
-package com.kushal.backend.dto;
+package com.kushal.backend.dto.ReviewpageDto;
 
 import com.kushal.backend.entity.ReviewStatus;
 import lombok.*;

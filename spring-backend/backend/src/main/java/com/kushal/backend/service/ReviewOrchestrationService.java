@@ -1,9 +1,9 @@
 package com.kushal.backend.service;
 
-import com.kushal.backend.dto.AiFindingResponseDto;
-import com.kushal.backend.dto.AiReviewRequestDto;
-import com.kushal.backend.dto.AiReviewResponseDto;
-import com.kushal.backend.dto.CreateReviewRequestDto;
+import com.kushal.backend.dto.AiDto.AiFindingResponseDto;
+import com.kushal.backend.dto.AiDto.AiReviewRequestDto;
+import com.kushal.backend.dto.AiDto.AiReviewResponseDto;
+import com.kushal.backend.dto.RequestDto.CreateReviewRequestDto;
 import com.kushal.backend.entity.ReviewFinding;
 import com.kushal.backend.entity.ReviewJob;
 import com.kushal.backend.entity.ReviewStatus;

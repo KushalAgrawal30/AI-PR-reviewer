@@ -1,5 +1,6 @@
-package com.kushal.backend.dto;
+package com.kushal.backend.dto.RequestDto;
 
+import com.kushal.backend.dto.AiDto.ChangedFileDto;
 import lombok.*;
 
 import java.util.List;

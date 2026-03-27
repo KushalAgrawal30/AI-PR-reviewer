@@ -1,8 +1,8 @@
 package com.kushal.backend.service;
 
-import com.kushal.backend.dto.ReviewFindingDto;
-import com.kushal.backend.dto.ReviewJobDetailsDto;
-import com.kushal.backend.dto.ReviewJobListDto;
+import com.kushal.backend.dto.ReviewpageDto.ReviewFindingDto;
+import com.kushal.backend.dto.ReviewpageDto.ReviewJobDetailsDto;
+import com.kushal.backend.dto.ReviewpageDto.ReviewJobListDto;
 import com.kushal.backend.entity.ReviewJob;
 import com.kushal.backend.repository.ReviewJobRepository;
 import lombok.RequiredArgsConstructor;
