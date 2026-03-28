@@ -124,17 +124,17 @@ export default function ReviewJobDetailsPage() {
         />
 
         <Card className="mb-8">
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div>
               <div className="flex items-center gap-2 text-sm mb-2">
-                <svg className="w-4 h-4 text-[#6b6b6b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#6b6b6b] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
                 <span className="text-[#6b6b6b]">Repository:</span>
-                <span className="text-[#a1a1a1] font-medium">{job.repositoryName}</span>
+                <span className="text-[#a1a1a1] font-medium truncate">{job.repositoryName}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <svg className="w-4 h-4 text-[#6b6b6b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#6b6b6b] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                 </svg>
                 <span className="text-[#6b6b6b]">Pull Request:</span>
@@ -156,7 +156,7 @@ export default function ReviewJobDetailsPage() {
           {job.description && (
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-white mb-2">Description</h3>
-              <p className="text-[#a1a1a1] text-sm leading-relaxed">
+              <p className="text-[#a1a1a1] text-sm leading-relaxed break-words">
                 {job.description}
               </p>
             </div>
@@ -191,11 +191,11 @@ export default function ReviewJobDetailsPage() {
             <div className="space-y-3">
               {job.findings.map((finding) => (
                 <Card key={finding.id} className="hover:border-[#2a2a2a] transition-colors">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-white mb-2">{finding.title}</h3>
-                      <div className="flex items-center gap-4 text-sm mb-3">
-                        <span className="text-[#8b8b8b]">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-white mb-2 break-words">{finding.title}</h3>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm mb-3">
+                        <span className="text-[#8b8b8b] break-all">
                           <span className="text-[#6b6b6b]">File:</span>{" "}
                           <span className="font-mono">{finding.filePath}</span>
                         </span>
@@ -206,7 +206,7 @@ export default function ReviewJobDetailsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                       <StatusBadge status={finding.severity} />
                       <StatusBadge status={finding.category} variant="default" />
                     </div>
@@ -217,7 +217,7 @@ export default function ReviewJobDetailsPage() {
                       <h4 className="text-xs font-semibold text-[#8b8b8b] uppercase tracking-wider mb-1.5">
                         Description
                       </h4>
-                      <p className="text-[#a1a1a1] text-sm leading-relaxed">{finding.description}</p>
+                      <p className="text-[#a1a1a1] text-sm leading-relaxed break-words">{finding.description}</p>
                     </div>
 
                     <div className="pt-3 border-t border-[#1a1a1a]">

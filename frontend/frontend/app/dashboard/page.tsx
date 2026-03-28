@@ -50,26 +50,26 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-10 bg-[#0a0a0a]">
+    <main className="min-h-screen px-4 sm:px-6 py-6 sm:py-10 bg-[#0a0a0a]">
       <div className="mx-auto max-w-6xl">
         <Card className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
               {user.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
                   alt={user.githubLogin}
-                  className="h-16 w-16 rounded-full border border-[#252525] object-cover"
+                  className="h-12 w-12 sm:h-16 sm:w-16 rounded-full border border-[#252525] object-cover flex-shrink-0"
                 />
               ) : (
-                <div className="h-16 w-16 rounded-full border border-[#252525] bg-[#151515]" />
+                <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full border border-[#252525] bg-[#151515] flex-shrink-0" />
               )}
 
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-1">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-white mb-1 break-words">
                   {user.name || user.githubLogin}
                 </h1>
-                <p className="text-[#8b8b8b] text-sm">@{user.githubLogin}</p>
+                <p className="text-[#8b8b8b] text-sm break-all">@{user.githubLogin}</p>
                 <p className="text-[#6b6b6b] text-xs font-mono mt-1">ID: {user.id}</p>
               </div>
             </div>
@@ -78,6 +78,7 @@ export default function DashboardPage() {
               onClick={handleLogout}
               variant="secondary"
               size="sm"
+              className="w-full sm:w-auto"
             >
               Logout
             </Button>
@@ -89,7 +90,7 @@ export default function DashboardPage() {
           description="Manage your repositories and review AI-generated PR analysis"
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link href="/review-job" className="group">
             <Card hover className="h-full">
               <div className="flex items-start gap-4">
@@ -100,10 +101,10 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-gray-200 transition-colors">
-                    Review Jobs
+                    All Reviews
                   </h2>
                   <p className="text-[#8b8b8b] text-sm">
-                    View all AI pull request review jobs and findings
+                    View all review jobs
                   </p>
                 </div>
               </div>
@@ -120,10 +121,30 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-gray-200 transition-colors">
-                    Repositories
+                    All Repositories
                   </h2>
                   <p className="text-[#8b8b8b] text-sm">
-                    Select and manage repositories connected to your account
+                    Browse all GitHub repos
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/repositories/connected" className="group">
+            <Card hover className="h-full">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-[#151515] border border-[#2a2a2a] rounded-lg group-hover:border-[#3a3a3a] transition-colors">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-gray-200 transition-colors">
+                    Connected Repos
+                  </h2>
+                  <p className="text-[#8b8b8b] text-sm">
+                    Manage active connections
                   </p>
                 </div>
               </div>

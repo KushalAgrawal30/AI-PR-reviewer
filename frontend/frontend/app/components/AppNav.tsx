@@ -44,13 +44,19 @@ export function AppNav() {
                 href="/repositories" 
                 active={pathname === "/repositories" || pathname === "/repositories/setup"}
               >
-                Repositories
+                All Repositories
               </NavLink>
               <NavLink 
                 href="/review-job" 
                 active={pathname.startsWith("/review-job")}
               >
                 Reviews
+              </NavLink>
+              <NavLink 
+                href="/repositories/connected" 
+                active={pathname.startsWith("/repositories/connected")}
+              >
+                Connected Repositories
               </NavLink>
             </div>
           </div>

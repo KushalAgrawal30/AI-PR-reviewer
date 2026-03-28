@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Card } from "@/app/components/ui/Card";
 import { Button } from "@/app/components/ui/Button";
 import { PageHeader } from "@/app/components/ui/PageHeader";
@@ -16,24 +17,24 @@ type LoggedInUser = {
   avatarUrl: string;
 };
 
-type UserRepositoryView = {
+type ConnectedRepository = {
+  id: number;
   githubRepoId: number;
-  name: string;
-  fullName: string;
+  repoName: string;
   ownerName: string;
+  fullName: string;
+  installationId: number;
+  active: boolean;
   isPrivate: boolean;
-  installationId: number | null;
-  connected: boolean;
 };
 
-export default function RepositoriesPage() {
+export default function ConnectedRepositoriesPage() {
   const router = useRouter();
 
   const [user, setUser] = useState<LoggedInUser | null>(null);
-  const [allRepos, setAllRepos] = useState<UserRepositoryView[]>([]);
+  const [repos, setRepos] = useState<ConnectedRepository[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [installing, setInstalling] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("loggedInUser");
@@ -46,28 +47,28 @@ export default function RepositoriesPage() {
     try {
       const parsedUser: LoggedInUser = JSON.parse(storedUser);
       setUser(parsedUser);
-      fetchRepos(parsedUser.id);
+      fetchConnectedRepos(parsedUser.id);
     } catch {
       localStorage.removeItem("loggedInUser");
       router.replace("/login");
     }
   }, [router]);
 
-  const fetchRepos = async (userId: number) => {
+  const fetchConnectedRepos = async (userId: number) => {
     try {
       setLoading(true);
       setError("");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/github/user/${userId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/user/${userId}`
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch repositories");
+        throw new Error("Failed to fetch connected repositories");
       }
 
       const data = await response.json();
-      setAllRepos(data);
+      setRepos(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -75,15 +76,10 @@ export default function RepositoriesPage() {
     }
   };
 
-  const handleInstallApp = () => {
-    setInstalling(true);
-    window.location.href = "https://github.com/apps/pr-review-ai/installations/new";
-  };
-
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
-        <LoadingState message="Loading repositories..." />
+        <LoadingState message="Loading connected repositories..." />
       </main>
     );
   }
@@ -93,8 +89,8 @@ export default function RepositoriesPage() {
       <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
         <div className="text-center">
           <p className="text-red-500 mb-4">Error: {error}</p>
-          <Button onClick={() => router.push("/dashboard")}>
-            Back to Dashboard
+          <Button onClick={() => router.push("/repositories")}>
+            Back to All Repositories
           </Button>
         </div>
       </main>
@@ -105,46 +101,39 @@ export default function RepositoriesPage() {
     <main className="min-h-screen px-6 py-10 bg-[#0a0a0a]">
       <div className="mx-auto max-w-6xl">
         <PageHeader
-          title="All Repositories"
-          description={user ? `GitHub repositories for @${user.githubLogin}` : "All repositories in your GitHub account"}
+          title="Connected Repositories"
+          description={user ? `Connected repositories for @${user.githubLogin}` : "Repositories actively connected to AI PR Reviewer"}
           actions={
             <>
-              <Button
-                onClick={() => router.push("/repositories/connected")}
-                variant="secondary"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Connected Repos
+              <Button onClick={() => router.push("/dashboard")} variant="secondary">
+                Dashboard
               </Button>
-              <Button
-                onClick={handleInstallApp}
-                disabled={installing}
-                variant="primary"
-              >
-                {installing ? "Redirecting..." : "Connect Repository"}
+              <Button onClick={() => router.push("/repositories")} variant="secondary">
+                All Repositories
               </Button>
             </>
           }
         />
 
-        {allRepos.length === 0 ? (
+        {repos.length === 0 ? (
           <Card>
             <EmptyState
-              title="No repositories found"
-              description="We couldn't find any repositories in your GitHub account."
+              title="No connected repositories"
+              description="Connect a repository to start reviewing pull requests with AI."
               action={
-                <Button onClick={() => window.location.reload()} variant="primary">
-                  Refresh
+                <Button 
+                  onClick={() => router.push("/repositories")} 
+                  variant="primary"
+                >
+                  Connect Your First Repository
                 </Button>
               }
             />
           </Card>
         ) : (
           <div className="space-y-3">
-            {allRepos.map((repo) => (
-              <Card key={repo.githubRepoId} hover>
+            {repos.map((repo) => (
+              <Card key={repo.id} hover>
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -160,25 +149,34 @@ export default function RepositoriesPage() {
                   </div>
 
                   <div className="flex-shrink-0">
-                    <StatusBadge status={repo.connected ? "Connected" : "Not Connected"} />
+                    <StatusBadge status={repo.active ? "Active" : "Inactive"} />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm mb-4">
                   <div>
                     <span className="text-[#6b6b6b]">Owner:</span>{" "}
                     <span className="text-[#a1a1a1] break-all">{repo.ownerName}</span>
                   </div>
                   <div>
-                    <span className="text-[#6b6b6b]">Name:</span>{" "}
-                    <span className="text-[#a1a1a1] break-all">{repo.name}</span>
+                    <span className="text-[#6b6b6b]">Repository:</span>{" "}
+                    <span className="text-[#a1a1a1] break-all">{repo.repoName}</span>
                   </div>
                   <div className="sm:col-span-2">
                     <span className="text-[#6b6b6b]">Installation ID:</span>{" "}
-                    <span className="text-[#a1a1a1] font-mono">
-                      {repo.installationId !== null ? repo.installationId : "Not available"}
-                    </span>
+                    <span className="text-[#a1a1a1] font-mono">{repo.installationId}</span>
                   </div>
+                </div>
+
+                <div className="pt-4 border-t border-[#1a1a1a]">
+                  <Link href={`/repositories/${encodeURIComponent(repo.fullName)}`}>
+                    <Button variant="secondary" size="sm" className="w-full sm:w-auto">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                      View Review Jobs
+                    </Button>
+                  </Link>
                 </div>
               </Card>
             ))}

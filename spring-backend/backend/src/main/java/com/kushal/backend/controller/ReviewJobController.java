@@ -6,10 +6,7 @@ import com.kushal.backend.dto.ReviewpageDto.ReviewJobListDto;
 import com.kushal.backend.service.ReviewJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +30,13 @@ public class ReviewJobController {
         ReviewJobDetailsDto reviewJobDetails = reviewJobService.getReviewJobById(id);
 
         return ResponseEntity.ok().body(reviewJobDetails);
+    }
+
+    @GetMapping("/repository")
+    public ResponseEntity<List<ReviewJobListDto>> getReviewJobsByRepository(
+            @RequestParam String repositoryName
+    ){
+        return ResponseEntity.ok(reviewJobService.getReviewJobsByRepoName(repositoryName));
     }
 
 }
