@@ -11,6 +11,9 @@ export async function fetchCurrentUser(): Promise<CurrentUser | null> {
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/me`,
       {
         credentials: "include",
+        headers: {
+          "ngrok-skip-browser-warning": "1",
+        },
       }
     );
 

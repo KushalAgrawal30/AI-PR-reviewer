@@ -82,8 +82,6 @@ public class GitHubAuthService {
                             GitHubUserDto.class
                     );
 
-            System.out.println(responseEntity);
-
             if (responseEntity.getBody() == null) {
                 throw new RuntimeException("GitHub user response was empty");
             }

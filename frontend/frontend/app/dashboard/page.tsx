@@ -30,7 +30,7 @@ export default function DashboardPage() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
+    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/github/logout`, {
       method: "POST",
       credentials: "include",
     });

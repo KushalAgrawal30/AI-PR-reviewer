@@ -48,10 +48,10 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("app_token", appToken)
                 .httpOnly(true)
-                .secure(true) // local dev only
+                .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -71,10 +71,10 @@ public class AuthController {
     public ResponseEntity<String> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("app_token", "")
                 .httpOnly(true)
-                .secure(false) // local dev only
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
