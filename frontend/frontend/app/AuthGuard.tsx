@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { LoadingState } from "./components/ui/LoadingState";
+import { fetchCurrentUser } from "@/lib/auth";
 
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = ["/login", "/auth/success", "/"];
@@ -10,61 +11,50 @@ const PUBLIC_ROUTES = ["/login", "/auth/success", "/"];
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Check if current route is public
-    const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+    const checkAuth = async () => {
+      const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
 
-    // Get user from localStorage
-    const storedUser = localStorage.getItem("loggedInUser");
-
-    if (!storedUser && !isPublicRoute) {
-      // Not authenticated and trying to access protected route
-      router.replace("/login");
-      return;
-    }
-
-    if (storedUser) {
       try {
-        // Validate the stored user data
-        const user = JSON.parse(storedUser);
-        if (user && user.id && user.githubLogin) {
-          setIsAuthenticated(true);
-          
-          // If authenticated and on login/home, redirect to dashboard
+        // Check authentication via JWT (API call)
+        const user = await fetchCurrentUser();
+
+        if (user) {
+          // User is authenticated
           if (pathname === "/login" || pathname === "/") {
+            // Redirect to dashboard if on public auth pages
             router.replace("/dashboard");
-            return;
+          } else {
+            // Allow access to protected routes
+            setIsChecking(false);
           }
         } else {
-          // Invalid user data, clear and redirect
-          localStorage.removeItem("loggedInUser");
+          // User is not authenticated
           if (!isPublicRoute) {
+            // Redirect to login if trying to access protected route
             router.replace("/login");
-            return;
+          } else {
+            // Allow access to public routes
+            setIsChecking(false);
           }
         }
       } catch (error) {
-        // Invalid JSON, clear and redirect
-        localStorage.removeItem("loggedInUser");
+        // Error checking auth (network issue, etc.)
         if (!isPublicRoute) {
           router.replace("/login");
-          return;
+        } else {
+          setIsChecking(false);
         }
       }
-    }
+    };
 
-    // If on public route and not authenticated, allow access
-    if (isPublicRoute) {
-      setIsAuthenticated(false);
-    } else {
-      setIsAuthenticated(!!storedUser);
-    }
+    checkAuth();
   }, [pathname, router]);
 
   // Show loading state while checking authentication
-  if (isAuthenticated === null) {
+  if (isChecking) {
     return (
       <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
         <LoadingState message="Checking authentication..." />

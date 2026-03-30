@@ -6,8 +6,6 @@ export default function LoginPage() {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI;
 
-    console.log(clientId, redirectUri);
-
     const handleGitHubLogin = () => {
         const githubAuthUrl =
             `https://github.com/login/oauth/authorize` +

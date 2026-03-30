@@ -1,24 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+const PUBLIC_ROUTES = ["/login", "/", "/auth/success"];
 
 export function AppNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const user = localStorage.getItem("loggedInUser");
-    setIsLoggedIn(!!user);
-  }, [pathname]);
-
-  if (pathname === "/login" || pathname === "/" || pathname === "/auth/success") {
-    return null;
-  }
-
-  if (!isLoggedIn) {
+  // Hide nav on public routes
+  if (PUBLIC_ROUTES.includes(pathname)) {
     return null;
   }
 

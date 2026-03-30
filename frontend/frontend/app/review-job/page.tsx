@@ -9,6 +9,8 @@ import { PageHeader } from "@/app/components/ui/PageHeader";
 import { StatusBadge } from "@/app/components/ui/StatusBadge";
 import { LoadingState } from "@/app/components/ui/LoadingState";
 import { EmptyState } from "@/app/components/ui/EmptyState";
+import { fetchCurrentUser } from "@/lib/auth";
+
 
 type ReviewJob = {
     id: number;
@@ -30,8 +32,19 @@ export default function ReviewJobsPage() {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
+                const user = await fetchCurrentUser();
+
+                if (!user) {
+                    setError("Unable to load user data");
+                    setLoading(false);
+                    return;
+                }
+
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs`
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs`,
+                    {
+                        credentials: "include",
+                    }
                 );
 
                 if (!response.ok) {

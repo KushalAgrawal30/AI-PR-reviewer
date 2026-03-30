@@ -48,7 +48,10 @@ export default function ReviewJobDetailsPage() {
     const fetchJob = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs/${id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs/${id}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {

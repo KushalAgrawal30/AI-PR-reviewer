@@ -42,6 +42,10 @@ public class ReviewJob {
     @OneToMany(mappedBy = "reviewJob", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewFinding> findings = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();

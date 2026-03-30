@@ -2,6 +2,8 @@ package com.kushal.backend.service;
 
 import com.kushal.backend.dto.AiDto.ChangedFileDto;
 import com.kushal.backend.dto.RequestDto.CreateReviewRequestDto;
+import com.kushal.backend.entity.ConnectedRepository;
+import com.kushal.backend.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class GitHubWebhookService {
     private String gitWebhookSecret;
 
     private final GitHubAppService gitHubAppService;
+    private final ConnectedRepositoryService connectedRepositoryService;
     private final ReviewOrchestrationService reviewOrchestrationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -87,6 +90,11 @@ public class GitHubWebhookService {
             String title = root.path("pull_request").path("title").asString();
             String body = root.path("pull_request").path("body").asString();
 
+            if (!connectedRepositoryService.isRepositoryActive(repoFullName)) {
+                System.out.println("Ignoring webhook for inactive/unconnected repo: " + repoFullName);
+                return;
+            }
+
             if (!List.of("opened", "reopened", "synchronize").contains(action)) {
                 return;
             }
@@ -121,8 +129,10 @@ public class GitHubWebhookService {
                 return;
             }
 
-            reviewOrchestrationService.startReview(reviewRequestDto);
+            ConnectedRepository connectedRepository = connectedRepositoryService.getByFullName(repoFullName);
+            User user = connectedRepository.getUser();
 
+            reviewOrchestrationService.startReview(reviewRequestDto, user);
 
         }catch (Exception e){
             throw new RuntimeException("Failed to process GitHub webhook", e);

@@ -41,7 +41,6 @@ public class GitHubAuthService {
             body.add("client_id", clientId);
             body.add("client_secret", clientSecret);
             body.add("code", code);
-            body.add("redirect_uri", redirectUrl);
 
             HttpEntity<MultiValueMap<String, String>> requestEntity =
                     new HttpEntity<>(body, headers);
@@ -53,6 +52,7 @@ public class GitHubAuthService {
                             requestEntity,
                             GitHubAccessTokenResponseDto.class
                     );
+
 
             if (response.getBody() == null || response.getBody().getAccessToken() == null) {
                 throw new RuntimeException("GitHub access token response was empty");

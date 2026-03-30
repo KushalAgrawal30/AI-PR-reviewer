@@ -7,6 +7,7 @@ import com.kushal.backend.dto.RequestDto.CreateReviewRequestDto;
 import com.kushal.backend.entity.ReviewFinding;
 import com.kushal.backend.entity.ReviewJob;
 import com.kushal.backend.entity.ReviewStatus;
+import com.kushal.backend.entity.User;
 import com.kushal.backend.repository.ReviewFindingRepository;
 import com.kushal.backend.repository.ReviewJobRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ReviewOrchestrationService {
     private final AiReviewClientService aiReviewClientService;
     private final ReviewFindingRepository reviewFindingRepository;
 
-    public AiReviewResponseDto startReview(CreateReviewRequestDto createReviewRequestDto){
+    public AiReviewResponseDto startReview(CreateReviewRequestDto createReviewRequestDto, User user){
 
         ReviewJob reviewJob = ReviewJob.builder()
                 .repositoryName(createReviewRequestDto.getRepositoryName())
@@ -28,6 +29,7 @@ public class ReviewOrchestrationService {
                 .title(createReviewRequestDto.getTitle())
                 .description(createReviewRequestDto.getDescription())
                 .status(ReviewStatus.PROCESSING)
+                .user(user)
                 .build();
 
         reviewJob = reviewJobRepository.save(reviewJob);

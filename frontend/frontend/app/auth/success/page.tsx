@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingState } from "@/app/components/ui/LoadingState";
 
@@ -9,24 +9,18 @@ function AuthSuccessContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const id = searchParams.get("id");
-    const githubLogin = searchParams.get("githubLogin");
-    const name = searchParams.get("name");
-    const avatarUrl = searchParams.get("avatarUrl");
-
-    if (!id || !githubLogin) {
+    // After OAuth callback, backend should have set JWT cookie
+    // Just redirect to dashboard and let AuthGuard validate
+    const error = searchParams.get("error");
+    
+    if (error) {
+      // If there's an auth error, go back to login
       router.replace("/login");
       return;
     }
 
-    const user = {
-      id: Number(id),
-      githubLogin,
-      name: name || "",
-      avatarUrl: avatarUrl || "",
-    };
-
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
+    // Success - redirect to dashboard
+    // JWT cookie should already be set by backend
     router.replace("/dashboard");
   }, [router, searchParams]);
 

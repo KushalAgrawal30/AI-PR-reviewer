@@ -17,9 +17,9 @@ public class ReviewJobService {
 
     private final ReviewJobRepository reviewJobRepository;
 
-    public List<ReviewJobListDto> getAllReviewJobs(){
+    public List<ReviewJobListDto> getAllReviewJobs(Long userId){
 
-        List<ReviewJob> reviewJobs = reviewJobRepository.findAll();
+        List<ReviewJob> reviewJobs = reviewJobRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
         List<ReviewJobListDto> reviewJobListDtoList = new ArrayList<>();
 
@@ -42,9 +42,9 @@ public class ReviewJobService {
 
     }
 
-    public ReviewJobDetailsDto getReviewJobById(Long id){
+    public ReviewJobDetailsDto getReviewJobById(Long id, Long userId){
 
-        ReviewJob reviewJob = reviewJobRepository.findById(id)
+        ReviewJob reviewJob = reviewJobRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("No jobs found"));
 
         List<ReviewFindingDto> findingDtos = reviewJob.getFindings().stream()
@@ -73,6 +73,30 @@ public class ReviewJobService {
                 .updatedAt(reviewJob.getUpdatedAt())
                 .findings(findingDtos)
                 .build();
+
+    }
+
+    public List<ReviewJobListDto> getReviewJobsByRepoName(String repositoryName, Long userId){
+        List<ReviewJob> reviewJobList = reviewJobRepository.findByUserIdAndRepositoryNameOrderByCreatedAtDesc(userId, repositoryName);
+
+        List<ReviewJobListDto> reviewJobListDtoList = new ArrayList<>();
+
+        for(ReviewJob reviewJob : reviewJobList ){
+            ReviewJobListDto reviewJobListDto = ReviewJobListDto.builder()
+                    .id(reviewJob.getId())
+                    .repositoryName(reviewJob.getRepositoryName())
+                    .prNumber(reviewJob.getPrNumber())
+                    .title(reviewJob.getTitle())
+                    .summary(reviewJob.getSummary())
+                    .status(reviewJob.getStatus())
+                    .createdAt(reviewJob.getCreatedAt())
+                    .updatedAt(reviewJob.getUpdatedAt())
+                    .build();
+
+            reviewJobListDtoList.add(reviewJobListDto);
+        }
+
+        return reviewJobListDtoList;
 
     }
 

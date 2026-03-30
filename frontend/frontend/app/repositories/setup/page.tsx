@@ -1,19 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card } from "@/app/components/ui/Card";
-import { Button } from "@/app/components/ui/Button";
-import { LoadingState } from "@/app/components/ui/LoadingState";
+import { fetchCurrentUser } from "@/lib/auth";
 
-type LoggedInUser = {
-  id: number;
-  githubLogin: string;
-  name: string;
-  avatarUrl: string;
-};
-
-function RepositorySetupContent() {
+export default function RepositorySetupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -23,12 +14,6 @@ function RepositorySetupContent() {
   useEffect(() => {
     const connectInstalledRepos = async () => {
       const installationId = searchParams.get("installation_id");
-      const storedUser = localStorage.getItem("loggedInUser");
-
-      if (!storedUser) {
-        router.replace("/login");
-        return;
-      }
 
       if (!installationId) {
         setError("Missing installation id from GitHub setup.");
@@ -36,15 +21,21 @@ function RepositorySetupContent() {
       }
 
       try {
-        const user: LoggedInUser = JSON.parse(storedUser);
+        const user = await fetchCurrentUser();
+
+        if (!user) {
+          setError("Unable to load user data");
+          return;
+        }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/connect`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/connect-after-install`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               userId: user.id,
               installationId: Number(installationId),
@@ -59,7 +50,7 @@ function RepositorySetupContent() {
         setStatus("Repositories connected successfully. Redirecting...");
 
         setTimeout(() => {
-          router.replace("/repositories");
+          router.replace("/repositories/connected");
         }, 1200);
       } catch (err) {
         setError(
@@ -74,38 +65,24 @@ function RepositorySetupContent() {
   }, [router, searchParams]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
-      <div className="w-full max-w-md">
-        <Card className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-6">GitHub App Setup</h1>
+    <main className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-md rounded-2xl border p-8 text-center">
+        <h1 className="text-2xl font-bold mb-3">GitHub App Setup</h1>
 
-          {error ? (
-            <>
-              <p className="text-red-500 mb-6">{error}</p>
-              <Button
-                onClick={() => router.replace("/repositories")}
-                variant="primary"
-              >
-                Back to Repositories
-              </Button>
-            </>
-          ) : (
-            <LoadingState message={status} />
-          )}
-        </Card>
+        {error ? (
+          <>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => router.replace("/repositories")}
+              className="rounded-xl border px-4 py-2 text-sm font-medium"
+            >
+              Back to Repositories
+            </button>
+          </>
+        ) : (
+          <p className="text-gray-400">{status}</p>
+        )}
       </div>
     </main>
-  );
-}
-
-export default function RepositorySetupPage() {
-  return (
-    <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center px-6 bg-[#0a0a0a]">
-        <LoadingState message="Loading..." />
-      </main>
-    }>
-      <RepositorySetupContent />
-    </Suspense>
   );
 }

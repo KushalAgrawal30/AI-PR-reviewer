@@ -34,7 +34,10 @@ export default function RepositoryReviewJobsPage() {
     const fetchJobs = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs/repository?repositoryName=${encodeURIComponent(fullName)}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/review-jobs/repository?repositoryName=${encodeURIComponent(fullName)}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -105,8 +108,8 @@ export default function RepositoryReviewJobsPage() {
               title="No review jobs yet"
               description="Review jobs will appear here once pull requests are opened in this repository."
               action={
-                <Button 
-                  onClick={() => router.push("/repositories/connected")} 
+                <Button
+                  onClick={() => router.push("/repositories/connected")}
                   variant="primary"
                 >
                   Back to Connected Repositories
