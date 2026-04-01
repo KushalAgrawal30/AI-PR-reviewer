@@ -43,7 +43,7 @@ export default function RepositoriesPage() {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/github/user/${currentUser.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/github/user`,
           {
             credentials: "include",
           }

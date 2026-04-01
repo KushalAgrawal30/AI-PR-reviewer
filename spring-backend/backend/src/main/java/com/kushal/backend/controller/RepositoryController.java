@@ -11,6 +11,8 @@ import com.kushal.backend.service.ConnectedRepositoryService;
 import com.kushal.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,15 +28,18 @@ public class RepositoryController {
     private final GitHubAppService gitHubAppService;
     private final UserService userService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ConnectedRepository>> getRepositoriesForUser(@PathVariable Long userId){
-        List<ConnectedRepository> connectedRepositoryList = connectedRepositoryService.getRepositoriesForUser(userId);
+    @GetMapping("/user")
+    public ResponseEntity<List<ConnectedRepository>> getRepositoriesForUser(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        List<ConnectedRepository> connectedRepositoryList = connectedRepositoryService.getRepositoriesForUser(user.getId());
         return ResponseEntity.ok(connectedRepositoryList);
     }
 
-    @GetMapping("/github/user/{userId}")
-    public ResponseEntity<List<UserRepositoryViewDto>> getAllUserRepositories(@PathVariable Long userId){
-        List<UserRepositoryViewDto> userRepositoryViewDtoList = githubRepositoryService.getGithubRepositoriesForUser(userId);
+    @GetMapping("/github/user")
+    public ResponseEntity<List<UserRepositoryViewDto>> getAllUserRepositories(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+
+        List<UserRepositoryViewDto> userRepositoryViewDtoList = githubRepositoryService.getGithubRepositoriesForUser(user.getId());
 
         return ResponseEntity.ok(userRepositoryViewDtoList);
     }

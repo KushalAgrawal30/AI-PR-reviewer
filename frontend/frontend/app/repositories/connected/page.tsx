@@ -43,7 +43,7 @@ export default function ConnectedRepositoriesPage() {
         }
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/user/${currentUser.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/repositories/user`,
           {
             credentials: "include",
           }
