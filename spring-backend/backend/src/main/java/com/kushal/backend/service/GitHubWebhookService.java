@@ -107,27 +107,13 @@ public class GitHubWebhookService {
             System.out.println("Title: " + title);
             System.out.println("Body: " + body);
 
-
-            List<ChangedFileDto> changedFileList = gitHubAppService.getPullRequestFiles(
-                    installationId,
-                    repoFullName,
-                    prNumber
-            );
-
-
-
             CreateReviewRequestDto reviewRequestDto = CreateReviewRequestDto.builder()
                     .repositoryName(repoFullName)
                     .prNumber(prNumber)
                     .title(title)
                     .description(body)
-                    .changedFiles(changedFileList)
                     .build();
 
-            if (changedFileList.isEmpty()) {
-                System.out.println("No reviewable changed files found for PR #" + prNumber);
-                return;
-            }
 
             ConnectedRepository connectedRepository = connectedRepositoryService.getByFullName(repoFullName);
             User user = connectedRepository.getUser();
